@@ -1,22 +1,19 @@
 import { createElement } from '../render.js';
 
 function createTemplate() {
-  return (
-    `<ul class="trip-events__list">
-    </ul>`
-  );
+  return '<button class="trip-main__event-add-btn  btn  btn--big  btn--yellow" type="button" disabled>New event</button>';
 }
 
-export default class TripEventsListView {
+export default class NewEventButtonView {
   getTemplate() {
     return createTemplate();
   }
+
 
   getElement() {
     if (!this.element) {
       this.element = createElement(this.getTemplate());
     }
-
     return this.element;
   }
 

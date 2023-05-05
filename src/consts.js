@@ -1,0 +1,3 @@
+const WAYPOINTS_COUNT = 10;
+
+export { WAYPOINTS_COUNT };
