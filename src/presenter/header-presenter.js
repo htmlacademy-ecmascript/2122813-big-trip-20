@@ -1,19 +1,24 @@
-import {render, RenderPosition} from '../render.js';
-import HeaderView from '../view/header-view.js';
+import {render} from '../render.js';
+import FilterView from '../view/filter-view.js';
+import NewEventButtonView from '../view/new-event-button-view.js';
+import TripControlsFiltersView from '../view/trip-controls-filters-view.js';
+import TripMainView from '../view/trip-main-view.js';
 
-const pageHeader = document.querySelector('.page-header');
 
 export default class HeaderPresenter {
-  TripMainView = new HeaderView();
+  tripMainView = new TripMainView();
+  tripControlsFiltersView = new TripControlsFiltersView();
 
 
-  constructor({container}) {
+  constructor ({container}) {
     this.container = container;
   }
 
   init() {
-    pageHeader.innerHTML = '';
 
-    render(this.TripMainView, this.container, RenderPosition.AFTERBEGIN);
+    render(new FilterView(), this.tripControlsFiltersView.getElement());
+    render(this.tripControlsFiltersView, this.tripMainView.getElement());
+    render(new NewEventButtonView(), this.tripMainView.getElement());
+    render(this.tripMainView, this.container);
   }
 }

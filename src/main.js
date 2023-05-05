@@ -1,16 +1,14 @@
-import { render } from './render.js';
 import BoardPresenter from './presenter/board-presenter.js';
-import FilterView from './view/filter-view.js';
 import HeaderPresenter from './presenter/header-presenter.js';
+import PointsModel from './model/points-model.js';
 
-const tripControlsFilters = document.querySelector('.trip-controls__filters');
 const pageBody = document.querySelector('.page-body__page-main');
 const pageBodyContainer = pageBody.querySelector('.page-body__container');
-const pageHeader = document.querySelector('.page-header');
-const boardPresenter = new BoardPresenter({container: pageBodyContainer});
-const headerPresenter = new HeaderPresenter({container: pageHeader});
+const pageHeaderContainer = document.querySelector('.page-header__container');
 
-render(new FilterView(), tripControlsFilters);
+const pointsModel = new PointsModel();
+const boardPresenter = new BoardPresenter({container: pageBodyContainer, pointsModel});
+const headerPresenter = new HeaderPresenter({container: pageHeaderContainer});
 
 headerPresenter.init();
 boardPresenter.init();
