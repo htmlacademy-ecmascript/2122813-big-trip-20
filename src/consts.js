@@ -1,3 +1,3 @@
-const WAYPOINTS_COUNT = 10;
+const WAYPOINTS_COUNT = 3;
 
 export { WAYPOINTS_COUNT };
