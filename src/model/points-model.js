@@ -1,4 +1,4 @@
-import { tripDestinations, offersByType, getRandomPoint} from '../mock/mock.js';
+import { tripDestinations, offersByType, getRandomPoint } from '../mock/mock.js';
 import { WAYPOINTS_COUNT } from '../consts.js';
 
 export default class PointsModel {

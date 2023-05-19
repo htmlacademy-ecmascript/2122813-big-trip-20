@@ -1,4 +1,5 @@
 import { getRandomArrayItem, getRandomNumber } from '../utils/common.js';
+import { nanoid } from 'nanoid';
 
 const offersByType = [
   {
@@ -245,6 +246,11 @@ const mockPoints = [
   }
 ];
 
-const getRandomPoint = () => getRandomArrayItem(mockPoints);
+function getRandomPoint() {
+  return {
+    id: nanoid(),
+    ...getRandomArrayItem(mockPoints)
+  };
+}
 
-export { tripDestinations, offersByType, getRandomPoint};
+export { tripDestinations, offersByType, getRandomPoint };
