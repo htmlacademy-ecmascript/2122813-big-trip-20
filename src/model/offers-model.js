@@ -1,4 +1,4 @@
-import {offersByType } from '../mock/mock.js';
+import { offersByType } from '../mock/mock.js';
 
 export default class OffersModel {
   #offersByType = offersByType;

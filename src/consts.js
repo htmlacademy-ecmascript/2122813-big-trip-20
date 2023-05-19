@@ -1,3 +1,10 @@
 const WAYPOINTS_COUNT = 3;
 
-export { WAYPOINTS_COUNT };
+const FilterType = {
+  EVERYTHING: 'everything',
+  FUTURE: 'future',
+  PRESENT: 'present',
+  PAST: 'past',
+};
+
+export { WAYPOINTS_COUNT, FilterType };

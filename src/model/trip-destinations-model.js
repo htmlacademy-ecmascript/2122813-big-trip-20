@@ -1,4 +1,4 @@
-import {tripDestinations} from '../mock/mock.js';
+import { tripDestinations } from '../mock/mock.js';
 
 
 export default class TripDestinationsModel {
