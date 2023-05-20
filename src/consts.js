@@ -7,4 +7,10 @@ const FilterType = {
   PAST: 'past',
 };
 
-export { WAYPOINTS_COUNT, FilterType };
+const SortType = {
+  TIME: 'time',
+  PRICE: 'price',
+  DAY: 'day',
+};
+
+export { WAYPOINTS_COUNT, FilterType, SortType };
