@@ -4,7 +4,6 @@ function humanizeDate(eventDate, dateFormat) {
   return eventDate ? dayjs(eventDate).format(dateFormat) : '';
 }
 
-
 function getRandomArrayItem (items) {
   return items[Math.floor(Math.random() * items.length)];
 }
