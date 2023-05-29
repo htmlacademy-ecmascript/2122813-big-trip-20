@@ -102,7 +102,7 @@ export default class PointPresenter {
   };
 
   #escKeyDownHandler = (evt) => {
-    if (evt.key.startsWith('Esc')) {
+    if (evt.key?.startsWith('Esc')) {
       evt.preventDefault();
       this.#handleCloseForm();
     }
