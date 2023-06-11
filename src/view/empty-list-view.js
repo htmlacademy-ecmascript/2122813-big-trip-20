@@ -6,7 +6,6 @@ const messageForFilter = {
   [FilterType.FUTURE]: 'There are no future events now',
 };
 
-
 function createTemplate(filterType) {
   return `<p class="trip-events__msg">${messageForFilter[filterType]}</p>`;
 }

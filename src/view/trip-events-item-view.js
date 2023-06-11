@@ -10,6 +10,7 @@ function createTemplate(point, tripDestinations, allOffers) {
 
   function createOffersListTemplate() {
     if (checkedOffers.length === 0) {
+
       return (
         `<li class="event__offer">
           <span class="event__offer-title">No additional offers</span>

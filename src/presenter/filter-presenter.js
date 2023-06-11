@@ -3,7 +3,6 @@ import { remove, render, replace } from '../framework/render';
 import { filterTypeToFilter } from '../utils/filter.js';
 import FilterView from '../view/filter-view';
 
-
 export default class FilterPresenter {
   #container = null;
   #filterModel = null;
@@ -26,22 +25,22 @@ export default class FilterPresenter {
     return [
       {
         type: FilterType.EVERYTHING,
-        name: 'everything',
+        name: FilterType.EVERYTHING.toLowerCase(),
         count: points.length
       },
       {
         type: FilterType.FUTURE,
-        name: 'future',
+        name: FilterType.FUTURE.toLowerCase(),
         count: filterTypeToFilter[FilterType.FUTURE](points).length
       },
       {
         type: FilterType.PRESENT,
-        name: 'present',
+        name: FilterType.PRESENT.toLowerCase(),
         count: filterTypeToFilter[FilterType.PRESENT](points).length
       },
       {
         type: FilterType.PAST,
-        name: 'past',
+        name: FilterType.PAST.toLowerCase(),
         count: filterTypeToFilter[FilterType.PAST](points).length
       }
     ];

@@ -9,6 +9,7 @@ const BLANK_DESTINATION = {
   name: '',
   description: '',
   pictures: [],
+
 };
 
 const BLANK_OFFER = {
@@ -54,16 +55,18 @@ function createOffersTemplate(offers, point) {
 }
 
 function createTemplate(state, tripDestinations, allOffers,) {
-  const {isEdit, ...point} = state;
-  const { basePrice, destination, dateFrom, dateTo, type} = point;
-  const { name: descriptionName, description, pictures} = tripDestinations.find((item) => item.id === destination) ?? BLANK_DESTINATION;
+  const { isEdit, ...point } = state;
+  const { basePrice, destination, dateFrom, dateTo, type, isDisabled, isSaving, isDeleting } = point;
+
+  const { name: descriptionName, description, pictures } = tripDestinations.find((item) => item.id === destination) ?? BLANK_DESTINATION;
   const offerByType = allOffers.find((offer) => offer.type === type) ?? BLANK_OFFER;
   const destinationsOptionValueTemplate = tripDestinations.map((item) => `<option value="${item.name}"></option>`).join('');
   const typeOffers = offerByType.offers;
+  const deleteButtonText = isDeleting ? 'Deleting...' : 'Delete';
 
   return (
     `<li class="trip-events__item">
-      <form class="event event--edit" action="#" method="post">
+      <form class="event event--edit" action="#" method="post ${isDisabled ? 'disabled' : ''}">
         <header class="event__header">
           <div class="event__type-wrapper">
             <label class="event__type  event__type-btn" for="event-type-toggle-1">
@@ -82,12 +85,12 @@ function createTemplate(state, tripDestinations, allOffers,) {
             <label class="event__label  event__type-output" for="event-destination-1">
             ${type}
             </label>
-      <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${he.encode(descriptionName)}" list="destination-list-1" required>
+      <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${he.encode(descriptionName)}" list="destination-list-1"  ${isDisabled ? 'disabled' : ''} required>
             <datalist id="destination-list-1">
               ${destinationsOptionValueTemplate}
               </datalist>
           </div>
-          <div class="event__field-group  event__field-group--time">
+          <div class="event__field-group  event__field-group--time" ${isDisabled ? 'disabled' : ''}>
             <label class="visually-hidden" for="event-start-time-1">From</label>
             <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${humanizeDate(dateFrom, 'YY/MM/DD HH:mm')}">
             &mdash;
@@ -99,10 +102,10 @@ function createTemplate(state, tripDestinations, allOffers,) {
               <span class="visually-hidden">Price</span>
               &euro;
             </label>
-            <input class="event__input  event__input--price" id="event-price-1" type="number" name="event-price" min="1" value="${basePrice}" required>
+            <input class="event__input  event__input--price" id="event-price-1" type="number" name="event-price" min="1" value="${basePrice}" ${isDisabled ? 'disabled' : ''} required>
           </div>
-          <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
-          <button class="event__reset-btn" type="reset">${isEdit ? 'Delete' : 'Cancel'}</button>
+          <button class="event__save-btn  btn  btn--blue" type="submit" ${isDisabled ? 'disabled' : ''}>${isSaving ? 'Saving...' : 'Save'}</button>
+          <button class="event__reset-btn" type="reset">${isEdit ? deleteButtonText : 'Cancel'}</button>
           ${isEdit ? '<button class="event__rollup-btn" type="button">' : ''}
             <span class="visually-hidden">Open event</span>
           </button>
@@ -136,6 +139,7 @@ function createTemplate(state, tripDestinations, allOffers,) {
     </li>`
   );
 }
+
 export default class EditFormView extends AbstractStatefulView {
   #point = null;
   #tripDestinations = null;
@@ -148,13 +152,13 @@ export default class EditFormView extends AbstractStatefulView {
 
   constructor({ point = createEmptyPoint(), tripDestinations, allOffers, onFormSubmit, onRollupClick, onResetClick}) {
     super();
+    this._setState(EditFormView.parsePointToState(point, tripDestinations));
     this.#point = point;
     this.#tripDestinations = tripDestinations;
     this.#allOffers = allOffers;
     this.#handleFormSubmit = onFormSubmit;
     this.#handleRollupClick = onRollupClick;
     this.#handleResetClick = onResetClick;
-    this._setState(EditFormView.parsePointToState(point, tripDestinations));
     this._restoreHandlers();
   }
 
@@ -170,7 +174,7 @@ export default class EditFormView extends AbstractStatefulView {
     element.querySelector('form').addEventListener('submit', this.#formSubmitHandler);
     element.querySelector('.event__type-group').addEventListener('change', this.#pointTypeChangeHandler);
     element.querySelector('.event__input--destination').addEventListener('change', this.#destinationChangeHandler);
-    element.querySelector('.event__input--price').addEventListener('input', this.#priceInputHandler);
+    element.querySelector('.event__input--price').addEventListener('change', this.#priceChangeHandler);
     element.querySelector('.event__reset-btn').addEventListener('click', this.#formResetClickHandler);
     this.#setDateFromPicker();
     this.#setDateToPicker();
@@ -202,7 +206,8 @@ export default class EditFormView extends AbstractStatefulView {
         defaultDate: this._state.dateFrom,
         onChange: this.#dateFromChangeHandler,
         enableTime: true,
-        maxDate: this._state.dateTo
+        maxDate: this._state.dateTo,
+        'time_24hr': true
       }
     );
   }
@@ -216,11 +221,12 @@ export default class EditFormView extends AbstractStatefulView {
         onChange: this.#dateToChangeHandler,
         enableTime: true,
         minDate: this._state.dateFrom,
+        'time_24hr': true
       }
     );
   }
 
-  #priceInputHandler = (evt) => {
+  #priceChangeHandler = (evt) => {
     evt.preventDefault();
 
     this._setState({
@@ -230,6 +236,7 @@ export default class EditFormView extends AbstractStatefulView {
 
   #formResetClickHandler = (evt) => {
     evt.preventDefault();
+
     this.#handleResetClick(EditFormView.parseStateToPoint(this._state));
   };
 
@@ -241,10 +248,12 @@ export default class EditFormView extends AbstractStatefulView {
   #rollupEventClickHandler = (evt) => {
     evt.preventDefault();
     this.#handleRollupClick();
+
   };
 
   #pointTypeChangeHandler = (evt) => {
     evt.preventDefault();
+
     this.updateElement({
       type: evt.target.value,
       offers: []
@@ -262,14 +271,19 @@ export default class EditFormView extends AbstractStatefulView {
 
   #offerChangeHandler = (evt) => {
     evt.preventDefault();
-    const currentOfferId = Number(evt.target.dataset.offerId);
-    const { offers } = this._state;
-    const currentOfferIndex = offers.indexOf(currentOfferId);
-    const updatedOffers = currentOfferIndex === -1
-      ? offers.concat(currentOfferId)
-      : offers.slice().splice(currentOfferIndex, 1);
+    evt.target.toggleAttribute('checked');
 
-    this._setState({ offers: updatedOffers });
+    let selectedOffers = this._state.offers;
+
+    if (evt.target.hasAttribute('checked')) {
+      selectedOffers.push(+(evt.target.dataset.offerId));
+    } else {
+      selectedOffers = selectedOffers.filter((id) => id !== +(evt.target.dataset.offerId));
+    }
+
+    this._setState({
+      offers: selectedOffers
+    });
   };
 
   #dateFromChangeHandler = ([dateFrom]) => {
@@ -285,12 +299,19 @@ export default class EditFormView extends AbstractStatefulView {
   static parsePointToState(point) {
     return { ...point,
       isEdit: Object.hasOwn(point, 'id'),
+      isDisabled: false,
+      isSaving: false,
+      isDeleting: false
     };
   }
 
   static parseStateToPoint(state) {
     const point = {...state};
     delete point.isEdit;
+    delete point.isDisabled;
+    delete point.isSaving;
+    delete point.isDeleting;
+
     return point;
   }
 }
