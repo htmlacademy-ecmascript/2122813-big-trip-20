@@ -1,5 +1,3 @@
-const WAYPOINTS_COUNT = 3;
-
 const FilterType = {
   EVERYTHING: 'everything',
   FUTURE: 'future',
@@ -16,13 +14,19 @@ const SortType = {
 const UserAction = {
   UPDATE_POINT: 'UPDATE_POINT',
   ADD_POINT: 'ADD_POINT',
-  DELETE_POINT: 'DELETE_POINT'
+  DELETE_POINT: 'DELETE_POINT',
 };
 
 const UpdateType = {
   PATCH: 'PATCH',
   MINOR: 'MINOR',
-  MAJOR: 'MAJOR'
+  MAJOR: 'MAJOR',
+  INIT: 'INIT'
 };
 
-export { WAYPOINTS_COUNT, FilterType, SortType, UserAction, UpdateType };
+const TimeLimit = {
+  LOWER: 350,
+  UPPER: 1000
+};
+
+export {FilterType, SortType, UserAction, UpdateType, TimeLimit};

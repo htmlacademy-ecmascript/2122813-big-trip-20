@@ -2,16 +2,16 @@ import { UserAction, UpdateType } from '../consts.js';
 import { render, replace, remove } from '../framework/render.js';
 import EditFormView from '../view/edit-form-view.js';
 import TripEventItemView from '../view/trip-events-item-view.js';
-import {isDatesEqual} from '../utils/common.js';
 
 const Mode = {
   DEFAULT: 'DEFAULT',
   EDITING: 'EDITING'
 };
+
 export default class PointPresenter {
   #container = null;
-  #pointCardView = null;
-  #pointFormView = null;
+  #tripEventItemView = null;
+  #editFormView = null;
   #point = null;
 
   #handleModeChange = null;
@@ -28,17 +28,17 @@ export default class PointPresenter {
   init({point, allOffers, tripDestinations}) {
     this.#point = point;
 
-    const prevPointCardView = this.#pointCardView;
-    const prevPointFormView = this.#pointFormView;
+    const prevTripEventItemView = this.#tripEventItemView;
+    const prevEditFormView = this.#editFormView;
 
-    this.#pointCardView = new TripEventItemView({
+    this.#tripEventItemView = new TripEventItemView({
       point,
       tripDestinations,
       allOffers,
       onEventRollupClick: this.#handleOpenForm,
     });
 
-    this.#pointFormView = new EditFormView({
+    this.#editFormView = new EditFormView({
       point,
       tripDestinations,
       allOffers,
@@ -47,64 +47,96 @@ export default class PointPresenter {
       onResetClick: this.#handleResetClick,
     });
 
-    if (prevPointCardView === null || prevPointFormView === null) {
-      render(this.#pointCardView, this.#container);
+    if (prevTripEventItemView === null || prevEditFormView === null) {
+      render(this.#tripEventItemView, this.#container);
       return;
     }
 
     if (this.#mode === Mode.DEFAULT) {
-      replace(this.#pointCardView, prevPointCardView);
+      replace(this.#tripEventItemView, prevTripEventItemView);
     }
 
     if (this.#mode === Mode.EDITING) {
-      replace(this.#pointFormView, prevPointFormView);
+      replace(this.#tripEventItemView, prevEditFormView);
+      this.#mode = Mode.DEFAULT;
     }
 
-    remove(prevPointCardView);
-    remove(prevPointFormView);
+    remove(prevTripEventItemView);
+    remove(prevEditFormView);
   }
 
   destroy() {
-    remove(this.#pointCardView);
-    remove(this.#pointFormView);
+    remove(this.#tripEventItemView);
+    remove(this.#editFormView);
+    document.removeEventListener('keydown', this.#escKeyDownHandler);
   }
 
   resetView() {
     if (this.#mode !== Mode.DEFAULT) {
-      this.#pointFormView.reset(this.#point);
+      this.#editFormView.reset(this.#point);
       this.#replaceFormToCard();
     }
   }
 
+  setSaving() {
+    if (this.#mode === Mode.EDITING) {
+      this.#editFormView.updateElement({
+        isDisabled: true,
+        isSaving: true,
+      });
+    }
+  }
+
+  setDeleting() {
+    if (this.#mode === Mode.EDITING) {
+      this.#editFormView.updateElement({
+        isDisabled: true,
+        isDeleting: true,
+      });
+    }
+  }
+
+  setAborting() {
+    if (this.#mode === Mode.DEFAULT) {
+      this.#tripEventItemView.shake();
+      return;
+    }
+
+    const resetFormState = () => {
+      this.#editFormView.updateElement({
+        isDisabled: false,
+        isSaving: false,
+        isDeleting: false,
+      });
+    };
+
+    this.#editFormView.shake(resetFormState);
+  }
+
   #replaceCardToForm() {
     this.#handleModeChange();
-    replace(this.#pointFormView, this.#pointCardView);
-    document.addEventListener('keydown', this.#escKeyDownHandler);
+    replace(this.#editFormView, this.#tripEventItemView);
     this.#mode = Mode.EDITING;
+    document.addEventListener('keydown', this.#escKeyDownHandler);
   }
 
   #replaceFormToCard() {
-    replace(this.#pointCardView, this.#pointFormView);
-    document.removeEventListener('keydown', this.#escKeyDownHandler);
+    replace(this.#tripEventItemView, this.#editFormView);
     this.#mode = Mode.DEFAULT;
+    document.removeEventListener('keydown', this.#escKeyDownHandler);
   }
 
   #handleCloseForm = () => {
-    this.#pointFormView.reset(this.#point);
+    this.#editFormView.reset(this.#point);
     this.#replaceFormToCard();
   };
 
   #handleSubmitForm = (point) => {
-    const isMinor =
-    !isDatesEqual(this.#point.dateFrom, point.dateFrom) ||
-    !isDatesEqual(this.#point.dateTo, point.dateTo);
-
     this.#handlePointChange(
       UserAction.UPDATE_POINT,
-      isMinor ? UpdateType.MINOR : UpdateType.PATCH,
+      UpdateType.MINOR,
       point
     );
-    this.#replaceFormToCard();
   };
 
   #handleOpenForm = () => {
@@ -122,7 +154,7 @@ export default class PointPresenter {
   #escKeyDownHandler = (evt) => {
     if (evt.key?.startsWith('Esc')) {
       evt.preventDefault();
-      this.#pointFormView.reset(this.#point);
+      this.#editFormView.reset(this.#point);
       this.#replaceFormToCard();
     }
   };
