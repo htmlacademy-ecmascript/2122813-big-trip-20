@@ -301,7 +301,8 @@ export default class EditFormView extends AbstractStatefulView {
       isEdit: Object.hasOwn(point, 'id'),
       isDisabled: false,
       isSaving: false,
-      isDeleting: false
+      isDeleting: false,
+      isFavorite: false
     };
   }
 
