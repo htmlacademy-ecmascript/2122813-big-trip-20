@@ -7,7 +7,7 @@ export default class PointsModel extends Observable {
   #offers = [];
   #destinations = [];
 
-  constructor({pointsApiService}) {
+  constructor({ pointsApiService }) {
     super();
     this.#pointsApiService = pointsApiService;
   }
@@ -55,10 +55,10 @@ export default class PointsModel extends Observable {
       this.#points = [
         ...this.#points.slice(0, index),
         updatedPoint,
-        ...this.#points.slice(index + 1)
+        ...this.#points.slice(index + 1),
       ];
       this._notify(updateType, updatedPoint);
-    } catch(err) {
+    } catch (err) {
       throw new Error('Can\'t update point');
     }
   }
@@ -70,7 +70,7 @@ export default class PointsModel extends Observable {
 
       this.#points = [
         newPoint,
-        ...this.#points
+        ...this.#points,
       ];
       this._notify(updateType, newPoint);
     } catch (err) {
@@ -88,7 +88,7 @@ export default class PointsModel extends Observable {
       await this.#pointsApiService.deletePoint(update);
       this.#points = [
         ...this.#points.slice(0, index),
-        ...this.#points.slice(index + 1)
+        ...this.#points.slice(index + 1),
       ];
       this._notify(updateType);
     } catch (err) {
@@ -102,11 +102,13 @@ export default class PointsModel extends Observable {
       basePrice: point['base_price'],
       dateFrom: new Date(point['date_from']),
       dateTo: new Date(point['date_to']),
+      isFavorite: point['is_favorite'],
     };
 
     delete adaptedPoint['base_price'];
     delete adaptedPoint['date_from'];
     delete adaptedPoint['date_to'];
+    delete adaptedPoint['is_favorite'];
 
     return adaptedPoint;
   }

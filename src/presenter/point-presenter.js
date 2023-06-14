@@ -19,13 +19,13 @@ export default class PointPresenter {
 
   #mode = Mode.DEFAULT;
 
-  constructor({container, onDataChange, onModeChange}) {
+  constructor({ container, onDataChange, onModeChange }) {
     this.#container = container;
     this.#handlePointChange = onDataChange;
     this.#handleModeChange = onModeChange;
   }
 
-  init({point, allOffers, tripDestinations}) {
+  init({ point, allOffers, tripDestinations }) {
     this.#point = point;
 
     const prevTripEventItemView = this.#tripEventItemView;
@@ -36,6 +36,7 @@ export default class PointPresenter {
       tripDestinations,
       allOffers,
       onEventRollupClick: this.#handleOpenForm,
+      onFavoriteButtonClick: this.#handleFavoriteButtonClick,
     });
 
     this.#editFormView = new EditFormView({
@@ -147,7 +148,16 @@ export default class PointPresenter {
     this.#handlePointChange(
       UserAction.DELETE_POINT,
       UpdateType.MINOR,
-      point,
+      point
+    );
+  };
+
+  #handleFavoriteButtonClick = () => {
+    const updatedPoint = { ...this.#point, isFavorite: !this.#point.isFavorite };
+    this.#handlePointChange(
+      UserAction.UPDATE_POINT,
+      UpdateType.MINOR,
+      updatedPoint
     );
   };
 
