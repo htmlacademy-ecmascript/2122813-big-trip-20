@@ -2,6 +2,7 @@ import PointListPresenter from './presenter/point-list-presenter.js';
 import PointsModel from './model/points-model.js';
 import FilterModel from './model/filter-model.js';
 import FilterPresenter from './presenter/filter-presenter.js';
+import HeaderPresenter from './presenter/header-presenter.js';
 import NewEventButtonView from './view/new-event-button-view.js';
 import { render } from './framework/render.js';
 import PointApiService from './api-service.js';
@@ -17,6 +18,11 @@ const pageBodyContainer = pageBody.querySelector('.page-body__container');
 const filterModel = new FilterModel();
 const pointsModel = new PointsModel({
   pointsApiService: new PointApiService(END_POINT, AUTHORIZATION)
+});
+
+const headerPresenter = new HeaderPresenter({
+  container: tripMain,
+  pointsModel,
 });
 
 const pointListPresenter = new PointListPresenter({
@@ -49,5 +55,6 @@ pointsModel.init()
     render(newEventButtonView, tripMain);
   });
 
+headerPresenter.init();
 filterPresenter.init();
 pointListPresenter.init();
