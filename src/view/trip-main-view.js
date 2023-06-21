@@ -55,17 +55,16 @@ export default class TripMainView extends AbstractView {
     let total = 0;
 
     for (const point of points) {
-      const checkedOffers = this.#pointsModel.offers.find(
-        (offer) => offer.type === point.type && point.offers.includes(offer.id)
-      );
-
-      const checkedOffersPrice = checkedOffers?.reduce(
-        (sum, checkedOffer) => sum + checkedOffer.price,
-        0
-      );
-
-      total += (checkedOffersPrice || 0) + point.basePrice;
+      total += point.basePrice;
     }
+
+    const offerPriceElements = document.querySelectorAll('.event__offer-price');
+    offerPriceElements.forEach((element) => {
+      const offerPrice = parseFloat(element.textContent);
+      if (!isNaN(offerPrice)) {
+        total += offerPrice;
+      }
+    });
 
     return total;
   }

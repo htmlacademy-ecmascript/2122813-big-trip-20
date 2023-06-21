@@ -19,6 +19,11 @@ export default class NewEventButtonView extends AbstractView {
   }
 
   setDisable() {
+    const messageElement = document.querySelector('.trip-events__msg');
+    if (messageElement) {
+      messageElement.textContent = '';
+    }
+
     this.element.disabled = true;
   }
 
